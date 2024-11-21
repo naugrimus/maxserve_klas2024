@@ -42,10 +42,7 @@ class ImportProductsCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
-        ;
+
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -54,36 +51,22 @@ class ImportProductsCommand extends Command
 
         foreach($json->products as $item) {
             $this->style->note(sprintf("Importing item %s", $item->title));
-            $this->upsert($item);
+            $this->upsertProduct($item);
         }
-
-        /*
-        $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
-
-        if ($arg1) {
-            $io->note(sprintf('You passed an argument: %s', $arg1));
-        }
-
-        if ($input->getOption('option1')) {
-            // ...
-        }
-
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');*/
 
         return Command::SUCCESS;
     }
 
-    protected function upsert(stdClass $item) {
+    protected function upsertProduct(stdClass $item) {
         $product = $this->getProductEntity($item->title);
 
         $product->setTitle($item->title)
             ->setDescription($item->description)
-
             ->setCategory($this->getCategoryEntity($item->category))
             ->setPrice($item->price)
             ->setStock($item->stock)
             ->setSku($item->sku)
+            ->setRating($item->rating)
             ->setAvailabilityStatus($item->availabilityStatus)
             ->setBarCode($item->meta->barcode)
             ->setDepth($item->dimensions->depth)
@@ -100,6 +83,7 @@ class ImportProductsCommand extends Command
         if(isset($item->brand)) {
             $product->setBrand($this->getBrandEntity($item->brand));
         }
+
         try {
             $this->factory->upsert($product);
         } catch (Exception $e) {
