@@ -27,7 +27,6 @@ final class Version20241121204308 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        
-        $this->addSql('CREATE UNIQUE INDEX idx_product_title ON product (title)');
+        $this->addSql('ALTER TABLE product CHANGE brand_id brand_id INT NOT NULL');
     }
 }
