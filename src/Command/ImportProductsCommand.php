@@ -4,6 +4,8 @@ namespace App\Command;
 
 use App\Entity\Product;
 use App\Entity\ProductBrand;
+use App\Entity\ProductCategory;
+use App\Factories\CategoryFactory;
 use App\Factories\ProductEntityFactory;
 use App\Factories\SymfonyStyleFactory;
 use App\Services\ProductApi\DataFetcherInterface;
@@ -77,7 +79,8 @@ class ImportProductsCommand extends Command
 
         $product->setTitle($item->title)
             ->setDescription($item->description)
-            ->setBrand($this->getBrandEntity($item->brand))
+
+            ->setCategory($this->getCategoryEntity($item->category))
             ->setPrice($item->price)
             ->setStock($item->stock)
             ->setSku($item->sku)
@@ -94,6 +97,9 @@ class ImportProductsCommand extends Command
             ->setQrCode($item->meta->qrCode)
             ->setThumbnail($item->thumbnail)
             ->setDiscountPercentage($item->discountPercentage);
+        if(isset($item->brand)) {
+            $product->setBrand($this->getBrandEntity($item->brand));
+        }
         try {
             $this->factory->upsert($product);
         } catch (Exception $e) {
@@ -108,5 +114,9 @@ class ImportProductsCommand extends Command
 
     protected function getBrandEntity(string $brand): ProductBrand {
         return $this->factory->createProductBrand($brand);
+    }
+
+    protected function getCategoryEntity(string $category): ProductCategory {
+        return $this->factory->createProductCategory($category);
     }
 }

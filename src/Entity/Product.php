@@ -45,7 +45,7 @@ class Product
     private Collection $tag;
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?ProductBrand $brand = null;
 
     #[ORM\Column(length: 32)]
