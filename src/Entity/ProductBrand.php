@@ -15,6 +15,8 @@ class ProductBrand
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $brand = null;
     /**
      * @var Collection<int, Product>
      */
@@ -57,6 +59,18 @@ class ProductBrand
                 $product->setBrand(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBrand(): ?string
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(string $brand): static
+    {
+        $this->brand = $brand;
 
         return $this;
     }

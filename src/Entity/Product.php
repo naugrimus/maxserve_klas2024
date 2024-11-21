@@ -22,9 +22,9 @@ class Product
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'category')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Productcategory $category = null;
+    private ?ProductCategory $category = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $price = null;
@@ -44,7 +44,7 @@ class Product
     #[ORM\ManyToMany(targetEntity: ProductTags::class, inversedBy: 'products')]
     private Collection $tag;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ProductBrand $brand = null;
 
