@@ -42,7 +42,7 @@ class ProductEntityFactory
     public function createProductCategory(string $category): ProductCategory {
         return $this->categoryFactory->create($category);
     }
-    public function upsert(Product $product) {
+    public function upsert(Product $product): void {
         $this->entityManager->persist($product);
         $this->entityManager->flush();
     }
