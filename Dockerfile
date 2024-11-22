@@ -5,10 +5,25 @@ FROM php:8.2.12-apache
 RUN docker-php-ext-install mysqli pdo pdo_mysql && \
     docker-php-ext-enable mysqli pdo pdo_mysql
 
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    libonig-dev \
+    libzip-dev \
+    zip \
+     && docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install mbstring \
+    && docker-php-ext-install zip
+
+RUN docker-php-ext-enable intl mbstring zip
+
 # Set an environment variable which contains the apache document root
-ENV APACHE_DOCUMENT_ROOT=/var/www/html
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+
 
 # Update the apache configuration using the `APACHE_DOCUMENT_ROOT` environment variable
+ADD apache_vhost.conf /etc/apache2/sites-available/000-default.conf
+
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
