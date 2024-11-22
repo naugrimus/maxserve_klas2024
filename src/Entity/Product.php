@@ -374,6 +374,6 @@ class Product
     }
 
     public function getDiscountPrice() {
-        return number_format($this->price - ($this->price * $this->discountPercentage/100),2);
+        return $this->price - ($this->price * $this->discountPercentage/100);
     }
 }

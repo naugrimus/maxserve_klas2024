@@ -18,19 +18,32 @@ class ProductRepository extends ServiceEntityRepository
 
     public function searchByBrandOrCategory(?int $brand, ?int $category, ?string $sort = null, string $direction = 'DESC') {
         $qb = $this->createQueryBuilder('p');
+        $qb->join('\App\Entity\ProductBrand', 'b');
+        $qb->andWhere('b.id = p.brand');
+        $qb->join('\App\Entity\ProductCategory', 'c');
+        $qb->andWhere('c.id = p.category');
 
         if($brand) {
-            $qb->andWhere('p.brand = :brand')
-                ->setParameter('brand', '%' . $brand . '%');
+            $qb->andWhere('b.id = :brand')
+                ->setParameter('brand', $brand);
         }
 
-        if($brand) {
-            $qb->andWhere('p.category = :category')
-                ->setParameter('category', '%' . $category . '%');
+        if($category) {
+            $qb->andWhere('c.id = :category')
+                ->setParameter('category', $category);
         }
 
         if ($sort) {
-            $qb->orderBy('p.' . $sort, $direction);
+            switch($sort) {
+                case 'brand':
+                    $qb->orderBy('b.' . $sort, $direction);
+                    break;
+                case 'category':
+                    $qb->orderBy('c.' . $sort, $direction);
+                    break;
+                default:
+                    $qb->orderBy('p.' . $sort, $direction);
+            }
         }
 
         return $qb;
