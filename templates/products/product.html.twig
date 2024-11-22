@@ -1,0 +1,66 @@
+{% block body %}
+    <h1>Product details</h1>
+
+    <div>
+
+        <table>
+
+            <tbody>
+
+                <tr>
+                    <td>title</td>
+                    <td>{{ product.title }}</td>
+                </tr>
+                <tr>
+                    <td>description</td>
+                    <td>{{ product.description }}</td>
+                </tr>
+                <tr>
+                    <td>categoru</td>
+                    <td>{{ product.category.category }}</td>
+                </tr>
+                <tr>
+                    <td>rating</td>
+                    <td>{{ product.brand.brand }}</td>
+                </tr>
+                <tr>
+                    <td>rating</td>
+                    <td>{{ product.rating }}</td>
+                </tr>
+                <tr>
+                    <td>dimensions</td>
+                    <td>
+                        width: {{ product.width }} <br />
+                        height: {{ product.height }} <br />
+                        depth: {{ product.depth }}<br />
+                    </td>
+                </tr>
+                <tr>
+                    <td>price</td>
+                    <td>
+                        {{ product.price|format_currency('EUR') }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>discountPercentage</td>
+                    <td>
+                        {{ product.discountPercentage }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>discounted price</td>
+                    <td>
+                        {{ product.discountPrice|format_currency('EUR') }}
+                    </td>
+                </tr>
+
+
+
+
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}
