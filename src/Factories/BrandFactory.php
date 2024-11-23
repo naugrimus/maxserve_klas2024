@@ -21,7 +21,7 @@ class BrandFactory implements BrandFactoryInterface
     public function create(string $brand): ProductBrand {
         $entity = $this->repository->findOneBy(['brand' => $brand]);
         if(!$entity) {
-            $entity =  new ProductBrand();
+            $entity = new ProductBrand();
             $entity->setBrand($brand);
             return $entity;
         }

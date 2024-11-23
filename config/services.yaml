@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.product_url: '%env(PRODUCT_URL)%'
+    app.use_local_images: '%env(USE_LOCAL_IMAGES)%'
+    app.images_dir: '%env(IMAGES_DIR)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -28,6 +30,15 @@ services:
     App\Services\ProductApi\ProductApi:
         arguments:
             - "%app.product_url%"
+
+    App\Command\ImportProductsCommand:
+        arguments:
+            - "%app.use_local_images%"
+
+    App\Services\ImageHandler:
+        arguments:
+            - "%kernel.project_dir%"
+            - "%app.images_dir%"
 
     App\Factories\SymfonyStyleFactory: ~
 
