@@ -61,6 +61,10 @@
     Aangezien je geen gebruik wilt maken van de data van de leverancier, is het dus goed mogelijk dat je ook geen gebruik wilt maken van CDN van de leveancier.
     In dat geval kan je er dus voor kiezen om de images lokaal te hosten
 
+    Ik heb nagedacht over het gebruik van FlySystem. Ik heb daar van afegzien omdat dat niks zegt over programmeer skills,
+    maar meer over het configureren van een module. Dat valt nu buiten de scope, maar zou een leuke
+    toevoeging kunnen zijn.
+
 ## rewrite command
     Ik zag dat het command veel te groot werd, dus besloten om deze naar een service te verleggen.
     Dat ziet er netter uit. Daarnaast kan je nu de url en of je gebruik wilt maken van lokale images meegeven aan de functie.
