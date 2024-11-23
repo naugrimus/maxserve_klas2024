@@ -12,12 +12,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class ProductApi implements DataFetcherInterface
 {
 
-    protected string $url;
-
     protected HttpClientInterface $client;
 
-    public function __construct(string $url, HttpClientInterface $client) {
-        $this->url = $url;
+    public function __construct( HttpClientInterface $client) {
         $this->client = $client;
     }
 
@@ -27,9 +24,9 @@ class ProductApi implements DataFetcherInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function fetchData(): \stdClass
+    public function fetchData(string $url): \stdClass
     {
-        $response = $this->client->request('GET', $this->url);
+        $response = $this->client->request('GET', $url);
         return json_decode($response->getContent());
     }
 }

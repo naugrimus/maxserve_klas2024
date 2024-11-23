@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\ImageHandler;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-
-class ImageHandler
+use App\Services\ImageHandler\imageHandlerInterface;
+class ImageHandler implements \App\Services\ImageHandler\imageHandlerInterface
 {
 
     protected string $root;
@@ -27,7 +27,7 @@ class ImageHandler
 
     }
 
-    public function save(string $filename, string $content): void {
+    protected function save(string $filename, string $content): void {
         $this->createDir();
         file_put_contents($this->root . '/' . $this->imageDir . '/' . $filename, $content);
     }

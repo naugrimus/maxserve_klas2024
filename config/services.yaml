@@ -26,16 +26,12 @@ services:
     # please note that last definitions always *replace* previous ones
 
 
-
-    App\Services\ProductApi\ProductApi:
-        arguments:
-            - "%app.product_url%"
-
     App\Command\ImportProductsCommand:
         arguments:
             - "%app.use_local_images%"
+            - "%app.product_url%"
 
-    App\Services\ImageHandler:
+    App\Services\ImageHandler\ImageHandler:
         arguments:
             - "%kernel.project_dir%"
             - "%app.images_dir%"

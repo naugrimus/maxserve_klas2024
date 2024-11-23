@@ -5,5 +5,5 @@ namespace App\Services\ProductApi;
 interface DataFetcherInterface
 {
 
-    public function fetchData();
+    public function fetchData(string $url);
 }
