@@ -50,5 +50,24 @@
 ## Frontend detail pagina
     spreekt voor zich
 
+## Sortering en filtering toegevoegd
+    Ik wil later nog een macro maken in twig, in de zin van don't repeat your self. Voor nu werkt het netjes
+    Met de nieuwe #[MapQueryParameter] goed opletten, als de waardes in GET leeg zijn, dan werkt dat niet goed
+    dus altijd zorgen dat die gevuld zijn.
+    Mocht iemand ze met de hand aan passen, dan werkt dus de applicatie niet helemaal lekker. Dt nog eens uitzoeken
+
+## product images
+    Er is een keuze te maken of je de images lokaal wilt hosten of niet.
+    Aangezien je geen gebruik wilt maken van de data van de leverancier, is het dus goed mogelijk dat je ook geen gebruik wilt maken van CDN van de leveancier.
+    In dat geval kan je er dus voor kiezen om de images lokaal te hosten
+
+## rewrite command
+    Ik zag dat het command veel te groot werd, dus besloten om deze naar een service te verleggen.
+    Dat ziet er netter uit. Daarnaast kan je nu de url en of je gebruik wilt maken van lokale images meegeven aan de functie.
+    Hierdoor hoeft Symfony style ook niet meer gebuikt te worden tijdens de import.
+    Veel Beter zo !!!
+
+
+
 
     
