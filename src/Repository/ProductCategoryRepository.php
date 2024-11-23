@@ -3,41 +3,23 @@
 namespace App\Repository;
 
 use App\Entity\ProductCategory;
+use App\Repository\traits\SortingTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<ProductCategory>
  */
-class ProductCategoryRepository extends ServiceEntityRepository
+class ProductCategoryRepository extends ServiceEntityRepository implements FetchAllSortedInterface
 {
+    use SortingTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ProductCategory::class);
     }
 
-    //    /**
-    //     * @return ProductCategory[] Returns an array of ProductCategory objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ProductCategory
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function fetchAllSorted($sort = 'ASC') {
+        return $this->fetchSorted('category', $sort);
+    }
 }

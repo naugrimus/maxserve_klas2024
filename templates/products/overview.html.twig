@@ -3,14 +3,30 @@
 {% block body %}
     <h1>Product overview</h1>
     <div>
-        <form method="post" action="/">
-            <select name="brand">
+        <form method="get" action="/">
+            <label for="brand">Brand:</label>
+
+                <select name="brand" id="brand">
+                    <option value="0"></option>
+                    {% for brand in brands %}
+                        <option value="{{ brand.id}}" {% if(app.request.query.get('brand') == brand.id) %} selected="selected"{% endif %}>{{ brand.brand }}</option>
+                    {% endfor %}
+
+                </select>
+
+            <label for="category">Category:</label>
+
+            <select name="category" id="category">
+
+                <option value="0"></option>
+                {% for category in categories %}
+                    <option value="{{category.id}}" {% if(app.request.query.get('category') == category.id) %} selected="selected"{% endif %}>{{ category.category }}</option>
+                {% endfor %}
 
             </select>
-            <select name="category">
 
-            </select>
-            <button type="submit" value="filter"></button>
+
+            <button type="submit" value="filter">Filter</button>
         </form>
 
     </div>
@@ -19,10 +35,40 @@
        <table>
            <thead>
                 <tr>
-                    <th>title</th>
-                    <th>brand</th>
-                    <th>category</th>
-                    <th>price</th>
+                    <th>
+                        <a href="{{ path('home', {
+                            ...app.request.query.all(),
+                            sort: 'title',
+                            sortDirection: sort == 'title' and sortDirection == 'asc' ? 'desc' : 'asc',
+                        }) }}">
+                            title
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ path('home', {
+                            ...app.request.query.all(),
+                            sort: 'brand',
+                            sortDirection: sort == 'brand' and sortDirection == 'asc' ? 'desc' : 'asc',
+                        }) }}">
+                            brand
+                        </a></th>
+                    <th>
+                        <a href="{{ path('home', {
+                            ...app.request.query.all(),
+                            sort: 'category',
+                            sortDirection: sort == 'category' and sortDirection == 'asc' ? 'desc' : 'asc',
+                        }) }}">
+                            category
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{{ path('home', {
+                            ...app.request.query.all(),
+                            sort: 'price',
+                            sortDirection: sort == 'price' and sortDirection == 'asc' ? 'desc' : 'asc',
+                        }) }}">
+                            price
+                        </a></th>
                     <th>&nbsp;</th>
                 </tr>
            </thead>

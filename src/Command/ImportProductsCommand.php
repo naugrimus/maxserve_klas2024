@@ -50,11 +50,6 @@ class ImportProductsCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $json = $this->productApi->fetchData();
@@ -67,7 +62,7 @@ class ImportProductsCommand extends Command
         return Command::SUCCESS;
     }
 
-    protected function upsertProduct(stdClass $item) {
+    protected function upsertProduct(stdClass $item): void {
         $product = $this->getProductEntity($item->title);
 
         $product->setTitle($item->title)
@@ -90,6 +85,7 @@ class ImportProductsCommand extends Command
             ->setQrCode($item->meta->qrCode)
             ->setThumbnail($item->thumbnail)
             ->setDiscountPercentage($item->discountPercentage);
+
         if(isset($item->brand)) {
             $product->setBrand($this->getBrandEntity($item->brand));
         }
