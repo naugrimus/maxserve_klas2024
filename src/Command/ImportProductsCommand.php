@@ -6,6 +6,8 @@ use App\Entity\Product;
 use App\Entity\ProductBrand;
 use App\Entity\ProductCategory;
 use App\Factories\ProductEntityFactory;
+use App\Entity\ProductImage;
+use App\Services\ImageHandler;
 use App\Services\ProductApi\DataFetcherInterface;
 use Doctrine\DBAL\Driver\Exception;
 use stdClass;
@@ -28,11 +30,23 @@ class ImportProductsCommand extends Command
 
     protected ProductEntityFactory $factory;
 
-    public function __construct(SymfonyStyle $style, DataFetcherInterface $productApi, ProductEntityFactory $factory)
+    protected bool $useLocalImages;
+
+    protected ImageHandler $imageHandler;
+
+    public function __construct(string $useLocalImages,
+                                SymfonyStyle $style,
+                                DataFetcherInterface $productApi,
+                                ProductEntityFactory $factory,
+                                ImageHandler $imageHandler
+    )
     {
         $this->style = $style;
         $this->productApi = $productApi;
         $this->factory = $factory;
+        $this->imageHandler = $imageHandler;
+        $this->useLocalImages = filter_var($useLocalImages, FILTER_VALIDATE_BOOLEAN);
+
         parent::__construct();
     }
 
@@ -76,6 +90,13 @@ class ImportProductsCommand extends Command
             $product->setBrand($this->getBrandEntity($item->brand));
         }
 
+        $this->setProductImages($product, $item);
+
+        if($this->useLocalImages) {
+            // download the images to local
+           $file =  $this->imageHandler->download($item->thumbnail);
+           $product->setThumbnailLocal($file);
+        }
         try {
             $this->factory->upsert($product);
         } catch (Exception $e) {
@@ -94,5 +115,26 @@ class ImportProductsCommand extends Command
 
     protected function getCategoryEntity(string $category): ProductCategory {
         return $this->factory->createProductCategory($category);
+    }
+
+    protected function setProductImages(Product $product, stdClass $item): void {
+        $this->removeProductImages($product);
+        foreach($item->images as $image) {
+            $productImage = new ProductImage();
+            $productImage->setUrl($image);
+            if($this->useLocalImages) {
+                $file =  $this->imageHandler->download($item->thumbnail);
+                $productImage->setLocal($file);
+            }
+            $product->addProductImage($productImage);
+        }
+    }
+
+    protected function removeProductImages(Product $product): void {
+
+        // remove images from the product
+        foreach($product->getProductImages() as $productImage) {
+            $product->removeProductImage($productImage);
+        }
     }
 }

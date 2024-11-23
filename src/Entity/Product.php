@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\canCreateWithFactoryInterface;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,7 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-class Product
+class Product implements canCreateWithFactoryInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -87,9 +88,19 @@ class Product
     #[ORM\Column(type: Types::TEXT)]
     private ?string $thumbnail = null;
 
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $thumbnailLocal = null;
+
+    /**
+     * @var Collection<int, ProductImage>
+     */
+    #[ORM\OneToMany(cascade: ['persist'], targetEntity: ProductImage::class, mappedBy: 'product')]
+    private Collection $productImages;
+
     public function __construct()
     {
         $this->tag = new ArrayCollection();
+        $this->productImages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -366,6 +377,11 @@ class Product
         return $this->thumbnail;
     }
 
+    public function getThumbnailLocal(): ?string
+    {
+        return $this->thumbnailLocal;
+    }
+
     public function setThumbnail(string $thumbnail): static
     {
         $this->thumbnail = $thumbnail;
@@ -373,7 +389,44 @@ class Product
         return $this;
     }
 
+    public function setThumbnailLocal(string $thumbnail): static
+    {
+        $this->thumbnailLocal = $thumbnail;
+
+        return $this;
+    }
+
     public function getDiscountPrice() {
         return $this->price - ($this->price * $this->discountPercentage/100);
+    }
+
+    /**
+     * @return Collection<int, ProductImage>
+     */
+    public function getProductImages(): Collection
+    {
+        return $this->productImages;
+    }
+
+    public function addProductImage(ProductImage $productImage): static
+    {
+        if (!$this->productImages->contains($productImage)) {
+            $this->productImages->add($productImage);
+            $productImage->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductImage(ProductImage $productImage): static
+    {
+        if ($this->productImages->removeElement($productImage)) {
+            // set the owning side to null (unless already changed)
+            if ($productImage->getProduct() === $this) {
+                $productImage->setProduct(null);
+            }
+        }
+
+        return $this;
     }
 }
