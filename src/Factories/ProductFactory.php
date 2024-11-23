@@ -4,7 +4,6 @@ namespace App\Factories;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class ProductFactory implements ProductFactoryInterface
 {
