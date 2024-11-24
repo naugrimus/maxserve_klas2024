@@ -21,7 +21,6 @@ class ProductImageRepository extends ServiceEntityRepository
         $images = $this->findBy(['product' => $product->getId()]);
         foreach($images as $image) {
             $this->getEntityManager()->remove($image);
-
         }
         $this->getEntityManager()->flush();
     }

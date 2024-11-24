@@ -9,6 +9,7 @@ use App\Entity\ProductImage;
 use App\Entity\ProductReview;
 use App\Factories\ProductEntityFactory;
 use App\Repository\ProductImageRepository;
+use App\Repository\ProductReviewRepository;
 use App\Services\ImageHandler\imageHandlerInterface;
 use App\Services\ProductApi\DataFetcherInterface;
 use Doctrine\DBAL\Driver\Exception;
@@ -24,19 +25,23 @@ class ProductImporter implements ProductImporterInterface
     protected imageHandlerInterface $imageHandler;
 
     protected ProductImageRepository $imageRepository;
+
+    protected ProductReviewRepository $reviewRepository;
     protected bool $useLocalImages;
+
     public function __construct(
                                 DataFetcherInterface $productApi,
                                 ProductEntityFactory $factory,
                                 imageHandlerInterface $imageHandler,
                                 ProductImageRepository $imageRepository,
+                                ProductReviewRepository $reviewRepository,
 
     ) {
         $this->productApi = $productApi;
         $this->factory = $factory;
         $this->imageHandler = $imageHandler;
         $this->imageRepository = $imageRepository;
-
+        $this->reviewRepository = $reviewRepository;
     }
 
     /**
@@ -142,6 +147,7 @@ class ProductImporter implements ProductImporterInterface
     }
 
     protected function removeReviews(Product $product): void {
+        $this->reviewRepository->deleteReviewsFromProduct($product);
         foreach($product->getReviews() as $review) {
             $product->removeReview($review);
         }
