@@ -5,8 +5,6 @@ namespace App\Factories;
 use App\Entity\Product;
 use App\Entity\ProductBrand;
 use App\Entity\ProductCategory;
-use App\Repository\ProductRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ProductEntityFactory

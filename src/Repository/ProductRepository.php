@@ -16,7 +16,7 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function searchByBrandOrCategory(?int $brand, ?int $category, ?string $sort = null, string $direction = 'DESC') {
+    public function searchByBrandOrCategory(?int $brand, ?int $category, ?string $sort = null, ?string $direction = 'DESC') {
         $qb = $this->createQueryBuilder('p');
         $qb->join('\App\Entity\ProductBrand', 'b');
         $qb->andWhere('b.id = p.brand');
@@ -48,5 +48,4 @@ class ProductRepository extends ServiceEntityRepository
 
         return $qb;
     }
-
 }

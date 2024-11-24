@@ -8,10 +8,13 @@ use App\Entity\ProductCategory;
 use App\Entity\ProductImage;
 use App\Entity\ProductReview;
 use App\Factories\ProductEntityFactory;
+use App\Repository\ProductImageRepository;
+use App\Repository\ProductReviewRepository;
 use App\Services\ImageHandler\imageHandlerInterface;
 use App\Services\ProductApi\DataFetcherInterface;
 use Doctrine\DBAL\Driver\Exception;
-
+use Generator;
+use stdClass;
 class ProductImporter implements ProductImporterInterface
 {
 
@@ -21,19 +24,30 @@ class ProductImporter implements ProductImporterInterface
 
     protected imageHandlerInterface $imageHandler;
 
+    protected ProductImageRepository $imageRepository;
+
+    protected ProductReviewRepository $reviewRepository;
     protected bool $useLocalImages;
+
     public function __construct(
                                 DataFetcherInterface $productApi,
                                 ProductEntityFactory $factory,
-                                imageHandlerInterface $imageHandler
+                                imageHandlerInterface $imageHandler,
+                                ProductImageRepository $imageRepository,
+                                ProductReviewRepository $reviewRepository,
+
     ) {
         $this->productApi = $productApi;
         $this->factory = $factory;
         $this->imageHandler = $imageHandler;
-
+        $this->imageRepository = $imageRepository;
+        $this->reviewRepository = $reviewRepository;
     }
 
-    public function import(string $url, $useLocalImages = true) {
+    /**
+     * @throws \Exception
+     */
+    public function import(string $url, $useLocalImages = true): Generator {
 
         $json = $this->productApi->fetchData($url);
         $this->useLocalImages = $useLocalImages;
@@ -44,7 +58,7 @@ class ProductImporter implements ProductImporterInterface
         }
     }
 
-    protected function upsertProduct(\stdClass $item): void {
+    protected function upsertProduct(stdClass $item): void {
         $product = $this->getProductEntity($item->title);
 
         $product->setTitle($item->title)
@@ -100,13 +114,13 @@ class ProductImporter implements ProductImporterInterface
         return $this->factory->createProductCategory($category);
     }
 
-    protected function setProductImages(Product $product, \stdClass $item): void {
+    protected function setProductImages(Product $product, stdClass $item): void {
         $this->removeProductImages($product);
         foreach($item->images as $image) {
             $productImage = new ProductImage();
             $productImage->setUrl($image);
             if($this->useLocalImages) {
-                $file =  $this->imageHandler->download($item->thumbnail);
+                $file =  $this->imageHandler->download($image);
                 $productImage->setLocal($file);
             }
             $product->addProductImage($productImage);
@@ -114,11 +128,7 @@ class ProductImporter implements ProductImporterInterface
     }
 
     protected function removeProductImages(Product $product): void {
-
-        // remove images from the product
-        foreach($product->getProductImages() as $productImage) {
-            $product->removeProductImage($productImage);
-        }
+        $this->imageRepository->deleteImagesFromProduct($product);
     }
 
     protected function handleReviews(Product $product, \StdClass $item): void {
@@ -136,7 +146,8 @@ class ProductImporter implements ProductImporterInterface
         }
     }
 
-    protected function removeReviews(Product $product) {
+    protected function removeReviews(Product $product): void {
+        $this->reviewRepository->deleteReviewsFromProduct($product);
         foreach($product->getReviews() as $review) {
             $product->removeReview($review);
         }
