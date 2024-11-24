@@ -106,7 +106,7 @@ class ProductImporter implements ProductImporterInterface
             $productImage = new ProductImage();
             $productImage->setUrl($image);
             if($this->useLocalImages) {
-                $file =  $this->imageHandler->download($item->thumbnail);
+                $file =  $this->imageHandler->download($image);
                 $productImage->setLocal($file);
             }
             $product->addProductImage($productImage);
