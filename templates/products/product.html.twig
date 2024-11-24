@@ -9,7 +9,7 @@
 
             <tr>
 
-                <td><img alt="{{ product.thumbnail }}" src="{% if (local_images == 'true') %}{{ product.thumbnaillocal }}{% else %} {{ product.thumbnail }} {% endif %}"></td>
+                <td><img width="100" height="100" alt="{{ product.thumbnail }}" src="{% if (local_images == 'true') %}{{ product.thumbnaillocal }}{% else %} {{ product.thumbnail }} {% endif %}"></td>
             </tr>
                 <tr>
                     <td>title</td>
@@ -64,13 +64,36 @@
 
             </tbody>
         </table>
-        <table>
-            {% for image in product.productimages %}
-                <tr>
+        <div style="float:left; width:600px">
+            <table>
+                {% for image in product.productimages %}
+                    <tr>
 
-                    <td><img alt="{{ image.url }}" src="{% if (local_images == 'true') %}{{ image.local }}{% else %} {{ image.url }} {% endif %}"></td>
+                        <td><img width="150" height="150" alt="{{ image.url }}" src="{% if (local_images == 'true') %}{{ image.local }}{% else %} {{ image.url }} {% endif %}"></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    <div style="float:left; width:600px">
+        <table>
+            {% for review in product.reviews %}
+                <tr>
+                    <td>{{ review.name }}</td>
+                    <td>{{ review.email }}</td>
+                    <td>{{ review.rating }}</td>
+                    <td>{{ review.reviewdate|date('Y-m-d H:i:s')  }}</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        {{ review.comment }}
+                    </td>
                 </tr>
             {% endfor %}
+        </table>
+    </div>
+
+
+
         </table>
     </div>
 
