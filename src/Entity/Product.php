@@ -102,6 +102,12 @@ class Product
     #[ORM\OneToMany(cascade: ['persist'], targetEntity: ProductReview::class, mappedBy: 'product', orphanRemoval: true)]
     private Collection $Reviews;
 
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $apiUpdatedAt = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
+    private ?\DateTimeInterface $apiCreatedAt = null;
+
     public function __construct()
     {
         $this->tag = new ArrayCollection();
@@ -462,6 +468,30 @@ class Product
                 $review->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->apiUpdatedAt;
+    }
+
+    public function setApiUpdatedAt(?\DateTimeInterface $apiUpdatedAt): static
+    {
+        $this->apiUpdatedAt = $apiUpdatedAt;
+
+        return $this;
+    }
+
+    public function getApiCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->apiCreatedAt;
+    }
+
+    public function setApiCreatedAt(\DateTimeInterface $apiCreatedAt): static
+    {
+        $this->apiCreatedAt = $apiCreatedAt;
 
         return $this;
     }

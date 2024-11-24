@@ -7,6 +7,7 @@ parameters:
     app.product_url: '%env(PRODUCT_URL)%'
     app.use_local_images: '%env(USE_LOCAL_IMAGES)%'
     app.images_dir: '%env(IMAGES_DIR)%'
+    app.check_update: '%env(CHECK_UPDATE_DATE)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -30,6 +31,7 @@ services:
         arguments:
             - "%app.use_local_images%"
             - "%app.product_url%"
+            - "%app.check_update%"
 
     App\Services\ImageHandler\ImageHandler:
         arguments:

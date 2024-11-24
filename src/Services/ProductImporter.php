@@ -29,6 +29,8 @@ class ProductImporter implements ProductImporterInterface
     protected ProductReviewRepository $reviewRepository;
     protected bool $useLocalImages;
 
+    protected bool $checkUpdateDate;
+
     public function __construct(
                                 DataFetcherInterface $productApi,
                                 ProductEntityFactory $factory,
@@ -47,20 +49,27 @@ class ProductImporter implements ProductImporterInterface
     /**
      * @throws \Exception
      */
-    public function import(string $url, $useLocalImages = true): Generator {
+    public function import(string $url, $useLocalImages = true, $checkUpdateDate = false): Generator {
 
         $json = $this->productApi->fetchData($url);
         $this->useLocalImages = $useLocalImages;
+        $this->checkUpdateDate = $checkUpdateDate;
         foreach($json->products as $item) {
             yield $item;
 
-            $this->upsertProduct($item);
+            $this->importProduct($item);
         }
     }
 
-    protected function upsertProduct(stdClass $item): void {
+    protected function importProduct(stdClass $item): void
+    {
         $product = $this->getProductEntity($item->title);
+        if ($this->canUpdate($product, $item) || !$product->getApiCreatedAt()) {
+            $this->upsertProduct($product, $item);
+        }
+    }
 
+    protected function upsertProduct(Product $product, stdClass $item): void {
         $product->setTitle($item->title)
             ->setDescription($item->description)
             ->setCategory($this->getCategoryEntity($item->category))
@@ -80,8 +89,9 @@ class ProductImporter implements ProductImporterInterface
             ->setMinimumOrderQuantity($item->minimumOrderQuantity)
             ->setQrCode($item->meta->qrCode)
             ->setThumbnail($item->thumbnail)
-            ->setDiscountPercentage($item->discountPercentage);
-
+            ->setDiscountPercentage($item->discountPercentage)
+            ->setApiCreatedAt(new \DateTimeImmutable($item->meta->createdAt))
+            ->setApiUpdatedAt(new \DateTimeImmutable($item->meta->updatedAt));
         if(isset($item->brand)) {
             $product->setBrand($this->getBrandEntity($item->brand));
         }
@@ -151,5 +161,27 @@ class ProductImporter implements ProductImporterInterface
         foreach($product->getReviews() as $review) {
             $product->removeReview($review);
         }
+    }
+
+    protected function canUpdate(Product $product, stdClass $item):bool {
+
+        if(!$this->checkUpdateDate) {
+            return true;
+        } else {
+            if ($this->updateBasedOnDate($product, $item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected function updateBasedOnDate(Product $product, stdClass $item): bool {
+
+        $itemDate = new \DateTimeImmutable($item->meta->updatedAt);
+        if($product->getApiUpdatedAt()->format('YYY-mm-dd H:i') == $itemDate->format('YYY-mm-dd H:i')) {
+            return false;
+        }
+
+        return true;
     }
 }
