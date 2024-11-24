@@ -71,6 +71,19 @@
     Hierdoor hoeft Symfony style ook niet meer gebuikt te worden tijdens de import.
     Veel Beter zo !!!
 
+# opmerkingen
+
+## serializers
+    ik zou met de serilizer kunnen werken
+    https://symfony.com/doc/current/serializer.html
+    Dat heb ik bewust nu niet gedaan, omdat je dan eigenlijk weer programmeert met symfony en laat het niet de 
+    algemene php kennis laaat zien. Wellicht een betere keuze, ik weet het niet.
+
+## Documentatie van opdracht
+    Er staan een paar foutjes in de opdracht:
+    docker compose up i.p.v docker-compose up
+
+
 
 
 
