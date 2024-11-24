@@ -96,10 +96,17 @@ class Product
     #[ORM\OneToMany(cascade: ['persist'], targetEntity: ProductImage::class, mappedBy: 'product')]
     private Collection $productImages;
 
+    /**
+     * @var Collection<int, ProductReview>
+     */
+    #[ORM\OneToMany(cascade: ['persist'], targetEntity: ProductReview::class, mappedBy: 'product', orphanRemoval: true)]
+    private Collection $Reviews;
+
     public function __construct()
     {
         $this->tag = new ArrayCollection();
         $this->productImages = new ArrayCollection();
+        $this->Reviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -423,6 +430,36 @@ class Product
             // set the owning side to null (unless already changed)
             if ($productImage->getProduct() === $this) {
                 $productImage->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductReview>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->Reviews;
+    }
+
+    public function addReview(ProductReview $review): static
+    {
+        if (!$this->Reviews->contains($review)) {
+            $this->Reviews->add($review);
+            $review->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(ProductReview $review): static
+    {
+        if ($this->Reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getProduct() === $this) {
+                $review->setProduct(null);
             }
         }
 

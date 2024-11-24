@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Entity\ProductBrand;
 use App\Entity\ProductCategory;
 use App\Entity\ProductImage;
+use App\Entity\ProductReview;
 use App\Factories\ProductEntityFactory;
 use App\Services\ImageHandler\imageHandlerInterface;
 use App\Services\ProductApi\DataFetcherInterface;
@@ -72,7 +73,7 @@ class ProductImporter implements ProductImporterInterface
         }
 
         $this->setProductImages($product, $item);
-
+        $this->handleReviews($product, $item);
         if($this->useLocalImages) {
             // download the images to local
             $file =  $this->imageHandler->download($item->thumbnail);
@@ -117,6 +118,27 @@ class ProductImporter implements ProductImporterInterface
         // remove images from the product
         foreach($product->getProductImages() as $productImage) {
             $product->removeProductImage($productImage);
+        }
+    }
+
+    protected function handleReviews(Product $product, \StdClass $item): void {
+
+        $this->removeReviews($product);
+        foreach ($item->reviews as $review) {
+            $date = new \DateTimeImmutable($review->date);
+            $productReview = new ProductReview();
+            $productReview->setReviewDate($date);
+            $productReview->setComment($review->comment);
+            $productReview->setName($review->reviewerName);
+            $productReview->setEmail($review->reviewerEmail);
+            $productReview->setRating($review->rating);
+            $product->addReview($productReview);
+        }
+    }
+
+    protected function removeReviews(Product $product) {
+        foreach($product->getReviews() as $review) {
+            $product->removeReview($review);
         }
     }
 }
