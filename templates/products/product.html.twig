@@ -7,6 +7,10 @@
 
             <tbody>
 
+            <tr>
+
+                <td><img alt="{{ product.thumbnail }}" src="{% if (local_images == 'true') %}{{ product.thumbnaillocal }}{% else %} {{ product.thumbnail }} {% endif %}"></td>
+            </tr>
                 <tr>
                     <td>title</td>
                     <td>{{ product.title }}</td>
@@ -60,7 +64,14 @@
 
             </tbody>
         </table>
+        <table>
+            {% for image in product.productimages %}
+                <tr>
 
+                    <td><img alt="{{ image.url }}" src="{% if (local_images == 'true') %}{{ image.local }}{% else %} {{ image.url }} {% endif %}"></td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 
 {% endblock %}
