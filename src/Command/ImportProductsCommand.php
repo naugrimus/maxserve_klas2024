@@ -22,20 +22,26 @@ class ImportProductsCommand extends Command
 
     protected bool $useLocalImages;
 
+    protected bool $checkUpdateDate;
+
     protected string $url;
+
 
     protected ProductImporterInterface $productImporter;
 
     public function __construct(
         string $useLocalImages,
         string $url,
+        string $checkUpdateDate,
         ProductImporterInterface $productImporter,
         SymfonyStyle $style
     )
     {
         $this->useLocalImages = filter_var($useLocalImages, FILTER_VALIDATE_BOOLEAN);
+        $this->checkUpdateDate = filter_var($checkUpdateDate, FILTER_VALIDATE_BOOLEAN);
         $this->url = $url;
         $this->productImporter = $productImporter;
+
         $this->style = $style;
 
         parent::__construct();
@@ -45,7 +51,7 @@ class ImportProductsCommand extends Command
     {
 
         try {
-            $item = $this->productImporter->import($this->url, $this->useLocalImages);
+            $item = $this->productImporter->import($this->url, $this->useLocalImages, $this->checkUpdateDate);
             foreach ($item as $product) {
                 $this->style->note(sprintf("Importing item %s", $product->title));
             }

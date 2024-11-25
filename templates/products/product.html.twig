@@ -6,61 +6,75 @@
         <table>
 
             <tbody>
-
-            <tr>
-
-                <td><img width="100" height="100" alt="{{ product.thumbnail }}" src="{% if (local_images == 'true') %}{{ product.thumbnaillocal }}{% else %} {{ product.thumbnail }} {% endif %}"></td>
-            </tr>
                 <tr>
-                    <td>title</td>
-                    <td>{{ product.title }}</td>
-                </tr>
-                <tr>
-                    <td>description</td>
-                    <td>{{ product.description }}</td>
-                </tr>
-                <tr>
-                    <td>categoru</td>
-                    <td>{{ product.category.category }}</td>
-                </tr>
-                <tr>
-                    <td>rating</td>
-                    <td>{{ product.brand.brand }}</td>
-                </tr>
-                <tr>
-                    <td>rating</td>
-                    <td>{{ product.rating }}</td>
-                </tr>
-                <tr>
-                    <td>dimensions</td>
                     <td>
-                        width: {{ product.width }} <br />
-                        height: {{ product.height }} <br />
-                        depth: {{ product.depth }}<br />
+                        <table>
+                            <tr>
+
+                                <td><img width="100" height="100" alt="{{ product.thumbnail }}" src="{% if (local_images == 'true') %}{{ product.thumbnaillocal }}{% else %} {{ product.thumbnail }} {% endif %}"></td>
+                            </tr>
+                            <tr>
+                                <td>title</td>
+                                <td>{{ product.title }}</td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>{{ product.description }}</td>
+                            </tr>
+                            <tr>
+                                <td>categoru</td>
+                                <td>{{ product.category.category }}</td>
+                            </tr>
+                            <tr>
+                                <td>rating</td>
+                                <td>{{ product.brand.brand }}</td>
+                            </tr>
+                            <tr>
+                                <td>rating</td>
+                                <td>{{ product.rating }}</td>
+                            </tr>
+                            <tr>
+                                <td>dimensions</td>
+                                <td>
+                                    width: {{ product.width }} <br />
+                                    height: {{ product.height }} <br />
+                                    depth: {{ product.depth }}<br />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>price</td>
+                                <td>
+                                    {{ product.price|format_currency('EUR') }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>discountPercentage</td>
+                                <td>
+                                    {{ product.discountPercentage }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>discounted price</td>
+                                <td>
+                                    {{ product.discountPrice|format_currency('EUR') }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <tr>
+                                <th>tags</th>
+                            </tr>
+                            {% for tag in product.tags %}
+                            <tr>
+                                <td>{{ tag.tag }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
                     </td>
                 </tr>
-                <tr>
-                    <td>price</td>
-                    <td>
-                        {{ product.price|format_currency('EUR') }}
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>discountPercentage</td>
-                    <td>
-                        {{ product.discountPercentage }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>discounted price</td>
-                    <td>
-                        {{ product.discountPrice|format_currency('EUR') }}
-                    </td>
-                </tr>
-
-
-
 
             </tbody>
         </table>
@@ -76,6 +90,9 @@
         </div>
     <div style="float:left; width:600px">
         <table>
+            <tr>
+                <th colspan="4">reviews</th>
+            </tr>
             {% for review in product.reviews %}
                 <tr>
                     <td>{{ review.name }}</td>

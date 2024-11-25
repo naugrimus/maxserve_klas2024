@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Product;
 use App\Entity\ProductTags;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,11 @@ class ProductTagsRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductTags::class);
     }
 
-    //    /**
-    //     * @return ProductTags[] Returns an array of ProductTags objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?ProductTags
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function deleteTagsFromProduct(Product $product): void {
+        $tags = $this->findBy(['product' => $product->getId()]);
+        foreach($tags as $tag) {
+            $this->getEntityManager()->remove($tag);
+        }
+        $this->getEntityManager()->flush();
+    }
 }
