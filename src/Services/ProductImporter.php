@@ -5,11 +5,9 @@ namespace App\Services;
 use App\Entity\Product;
 use App\Entity\ProductBrand;
 use App\Entity\ProductCategory;
-use App\Entity\ProductImage;
-use App\Entity\ProductReview;
 use App\Factories\ProductEntityFactory;
-use App\Repository\ProductImageRepository;
-use App\Repository\ProductReviewRepository;
+use App\Services\Handlers\hasImportHandlerInterface;
+use App\Services\Handlers\TagsHandler;
 use App\Services\ImageHandler\imageHandlerInterface;
 use App\Services\ProductApi\DataFetcherInterface;
 use Doctrine\DBAL\Driver\Exception;
@@ -22,28 +20,34 @@ class ProductImporter implements ProductImporterInterface
 
     protected ProductEntityFactory $factory;
 
+
+    protected hasImportHandlerInterface $productImageHandler;
+
     protected imageHandlerInterface $imageHandler;
 
-    protected ProductImageRepository $imageRepository;
+    protected hasImportHandlerInterface $reviewHandler;
 
-    protected ProductReviewRepository $reviewRepository;
     protected bool $useLocalImages;
 
     protected bool $checkUpdateDate;
 
+    protected TagsHandler $tagsHandler;
+
     public function __construct(
                                 DataFetcherInterface $productApi,
                                 ProductEntityFactory $factory,
-                                imageHandlerInterface $imageHandler,
-                                ProductImageRepository $imageRepository,
-                                ProductReviewRepository $reviewRepository,
+                                hasImportHandlerInterface $imageHandler,
+                                hasImportHandlerInterface $reviewHandler,
+                                hasImportHandlerInterface $tagsHandler,
+                                imageHandlerInterface $thumbnailHandler
 
     ) {
         $this->productApi = $productApi;
         $this->factory = $factory;
-        $this->imageHandler = $imageHandler;
-        $this->imageRepository = $imageRepository;
-        $this->reviewRepository = $reviewRepository;
+        $this->productImageHandler = $imageHandler;
+        $this->reviewHandler = $reviewHandler;
+        $this->tagsHandler = $tagsHandler;
+        $this->imageHandler = $thumbnailHandler;
     }
 
     /**
@@ -96,8 +100,11 @@ class ProductImporter implements ProductImporterInterface
             $product->setBrand($this->getBrandEntity($item->brand));
         }
 
-        $this->setProductImages($product, $item);
-        $this->handleReviews($product, $item);
+        $this->productImageHandler->setUseLocalImages($this->useLocalImages);
+        $this->productImageHandler->Import($product, $item);
+        $this->reviewHandler->Import($product, $item);
+        $this->tagsHandler->import($product, $item);
+
         if($this->useLocalImages) {
             // download the images to local
             $file =  $this->imageHandler->download($item->thumbnail);
@@ -124,45 +131,6 @@ class ProductImporter implements ProductImporterInterface
         return $this->factory->createProductCategory($category);
     }
 
-    protected function setProductImages(Product $product, stdClass $item): void {
-        $this->removeProductImages($product);
-        foreach($item->images as $image) {
-            $productImage = new ProductImage();
-            $productImage->setUrl($image);
-            if($this->useLocalImages) {
-                $file =  $this->imageHandler->download($image);
-                $productImage->setLocal($file);
-            }
-            $product->addProductImage($productImage);
-        }
-    }
-
-    protected function removeProductImages(Product $product): void {
-        $this->imageRepository->deleteImagesFromProduct($product);
-    }
-
-    protected function handleReviews(Product $product, \StdClass $item): void {
-
-        $this->removeReviews($product);
-        foreach ($item->reviews as $review) {
-            $date = new \DateTimeImmutable($review->date);
-            $productReview = new ProductReview();
-            $productReview->setReviewDate($date);
-            $productReview->setComment($review->comment);
-            $productReview->setName($review->reviewerName);
-            $productReview->setEmail($review->reviewerEmail);
-            $productReview->setRating($review->rating);
-            $product->addReview($productReview);
-        }
-    }
-
-    protected function removeReviews(Product $product): void {
-        $this->reviewRepository->deleteReviewsFromProduct($product);
-        foreach($product->getReviews() as $review) {
-            $product->removeReview($review);
-        }
-    }
-
     protected function canUpdate(Product $product, stdClass $item):bool {
 
         if(!$this->checkUpdateDate) {
@@ -184,4 +152,5 @@ class ProductImporter implements ProductImporterInterface
 
         return true;
     }
+
 }

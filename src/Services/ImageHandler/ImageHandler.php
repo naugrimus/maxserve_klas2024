@@ -29,7 +29,6 @@ class ImageHandler implements \App\Services\ImageHandler\imageHandlerInterface
 
     protected function save(string $filename, string $content): void {
         $this->createDir($filename);
-
         file_put_contents($this->root . '/public/' . trim($this->imageDir, '/') . '/' . urldecode($filename), $content);
     }
 
@@ -37,7 +36,6 @@ class ImageHandler implements \App\Services\ImageHandler\imageHandlerInterface
         $filePath = parse_url($url)['path'];
         $parts = explode('/', $filePath);
         return $parts[count($parts) -2] . '/' . $parts[count($parts) - 1];
-
     }
 
 

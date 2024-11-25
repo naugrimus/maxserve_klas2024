@@ -32,11 +32,20 @@ services:
             - "%app.use_local_images%"
             - "%app.product_url%"
             - "%app.check_update%"
+            - '@App\Services\ProductImporter'
 
     App\Services\ImageHandler\ImageHandler:
         arguments:
             - "%kernel.project_dir%"
             - "%app.images_dir%"
+
+    App\Services\ProductImporter:
+        arguments:
+            - '@App\Services\ProductApi\ProductApi'
+            - '@App\Factories\ProductEntityFactory'
+            - '@App\Services\Handlers\ProductImageHandler'
+            - '@App\Services\Handlers\ReviewHandler'
+            - '@App\Services\Handlers\TagsHandler'
 
     App\Factories\SymfonyStyleFactory: ~
 

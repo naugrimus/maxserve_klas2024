@@ -38,12 +38,6 @@ class Product
     #[ORM\Column]
     private ?int $stock = null;
 
-    /**
-     * @var Collection<int, ProductTags>
-     */
-    #[ORM\ManyToMany(targetEntity: ProductTags::class, inversedBy: 'products')]
-    private Collection $tag;
-
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: true)]
     private ?ProductBrand $brand = null;
@@ -102,10 +96,16 @@ class Product
     #[ORM\OneToMany(cascade: ['persist'], targetEntity: ProductReview::class, mappedBy: 'product', orphanRemoval: true)]
     private Collection $Reviews;
 
+    /**
+     * @var Collection<int, ProductTags>
+     */
+    #[ORM\OneToMany(cascade: ['persist'], targetEntity: ProductTags::class, mappedBy: 'product')]
+    private Collection $tags;
+
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $apiUpdatedAt = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $apiCreatedAt = null;
 
     public function __construct()
@@ -207,15 +207,16 @@ class Product
     /**
      * @return Collection<int, ProductTags>
      */
-    public function getTag(): Collection
+    public function getTags(): Collection
     {
-        return $this->tag;
+        return $this->tags;
     }
 
     public function addTag(ProductTags $tag): static
     {
-        if (!$this->tag->contains($tag)) {
-            $this->tag->add($tag);
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->setProduct($this);
         }
 
         return $this;

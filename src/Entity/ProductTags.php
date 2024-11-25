@@ -15,15 +15,22 @@ class ProductTags
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @var Collection<int, Product>
-     */
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'tag')]
-    private Collection $products;
+    #[ORM\ManyToOne(inversedBy: 'tags')]
+    private ?Product $product = null;
 
-    public function __construct()
+    #[ORM\Column(length: 255)]
+    private ?string $tag = null;
+    
+    public function getProduct(): ?Product
     {
-        $this->products = new ArrayCollection();
+        return $this->product;
+    }
+
+    public function setProduct(?Product $product): static
+    {
+        $this->product = $product;
+
+        return $this;
     }
 
     public function getId(): ?int
@@ -31,30 +38,17 @@ class ProductTags
         return $this->id;
     }
 
-    /**
-     * @return Collection<int, Product>
-     */
-    public function getProducts(): Collection
+    public function getTag(): ?string
     {
-        return $this->products;
+        return $this->tag;
     }
 
-    public function addProduct(Product $product): static
+    public function setTag(string $Tag): static
     {
-        if (!$this->products->contains($product)) {
-            $this->products->add($product);
-            $product->addTag($this);
-        }
+        $this->tag = $Tag;
 
         return $this;
     }
-
-    public function removeProduct(Product $product): static
-    {
-        if ($this->products->removeElement($product)) {
-            $product->removeTag($this);
-        }
-
-        return $this;
-    }
+    
+    
 }
