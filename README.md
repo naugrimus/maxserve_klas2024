@@ -71,6 +71,12 @@
     Hierdoor hoeft Symfony style ook niet meer gebuikt te worden tijdens de import.
     Veel Beter zo !!!
 
+## tags
+    De erste tabel setup was niet juist. Deze aangepast met een migratie.
+    Door tags toe te vogen, besloten met handlers te werken. Daar een aparte interface voor gemaakt.
+    Symfony wilde geen auto wiring hier op toepassen, dus de config maar aangepast
+    
+
 # opmerkingen
 
 ## serializers
@@ -78,6 +84,9 @@
     https://symfony.com/doc/current/serializer.html
     Dat heb ik bewust nu niet gedaan, omdat je dan eigenlijk weer programmeert met symfony en laat het niet de 
     algemene php kennis laaat zien. Wellicht een betere keuze, ik weet het niet.
+
+## indexes
+    OP sommige tabellem zou een inde op kunnen zitten. Zou ik nog even langs kunnen lopen
 
 ## Documentatie van opdracht
     Er staan een paar foutjes in de opdracht:
